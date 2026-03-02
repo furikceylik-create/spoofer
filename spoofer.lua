@@ -1,25 +1,34 @@
-#!/bin/bash
-props=(
-        "ro.product.brand=google"
-        "ro.product.manufacturer=Google"
-        "ro.system.build.product=redfin"
-        "ro.product.name=redfin"
-        "ro.product.device=redfin"
-        "ro.product.model=Pixel 5"
-        "ro.system.build.flavor=redfin-user"
-        "ro.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys"
-        "ro.system.build.description=redfin-user 11 RQ3A.211001.001 eng.electr.20230318.111310 release-keys"
-        "ro.bootimage.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys"
-        "ro.build.display.id=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys"
-        "ro.build.tags=release-keys"
-        "ro.build.description=redfin-user 11 RQ3A.211001.001 eng.electr.20230318.111310 release-keys"
-        "ro.vendor.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys"
-        "ro.vendor.build.id=RQ3A.211001.001"
-        "ro.vendor.build.tags=release-keys"
-        "ro.vendor.build.type=user"
-        "ro.odm.build.tags=release-keys"
-)
+-- Xeno Uyumlu Xbox One Spoofer (Hookmetamethod'suz - Mart 2026)
+local UserInputService = game:GetService("UserInputService")
+local GuiService = game:GetService("GuiService")
 
-for i in "${props[@]}";
-        do sudo echo $i >> /var/lib/waydroid/waydroid_base.prop
-done
+pcall(function()
+    -- Input ayarları (Xbox taklidi)
+    UserInputService.TouchEnabled = false
+    UserInputService.MouseEnabled = false
+    UserInputService.KeyboardEnabled = false
+    UserInputService.GamepadEnabled = true
+    UserInputService.ControllerEnabled = true
+end)
+
+pcall(function()
+    -- Platform override
+    local mt = getrawmetatable and getrawmetatable(UserInputService) or {}
+    local oldNamecall = mt.__namecall
+    if oldNamecall then
+        setreadonly(mt, false)
+        mt.__namecall = function(self, ...)
+            local method = getnamecallmethod()
+            if self == UserInputService and (method == "GetPlatform" or method == "GetPlatformName") then
+                if method == "GetPlatform" then return Enum.Platform.XBoxOne end
+                return "XboxOne"
+            elseif self == GuiService and method == "IsTenFootInterface" then
+                return true
+            end
+            return oldNamecall(self, ...)
+        end
+        setreadonly(mt, true)
+    end
+end)
+
+print("[Xeno Xbox Spoofer] Başarılı! Platform Xbox One olarak spoof edildi.")
